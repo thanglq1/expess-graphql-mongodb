@@ -1,60 +1,30 @@
 const graphqlResolver = {
+  // Read
   Query: {
-    users: () => [
-      {
-        id: "1",
-        username: "Admin",
-        email: "admin@gmail.com",
-      },
-      {
-        id: "2",
-        username: "Thang",
-        email: "thang@gmail.com",
-      },
-    ],
-    user: (id) => ({
-      id: "1",
-      username: "Admin",
-      email: "admin@gmail.com",
-    }),
-    posts: () => [
-      {
-        id: "10",
-        title: "This is post 1",
-        body: "This is body of post 1",
-      },
-      {
-        id: "11",
-        title: "This is post 2",
-        body: "This is body of post 2",
-      },
-      {
-        id: "12",
-        title: "This is post 3",
-        body: "This is body of post 3",
-      },
-    ],
-    post: (id) => ({
-      id: "12",
-      title: "This is post 3",
-      body: "This is body of post 3",
-    }),
+    users: async (_, args, { database }) => await database.getUsers(),
+    user: async (_, { id }, { database }) => await database.getUser(id),
+    signin: async (_, { email, password }, { database }) =>
+      await database.signin(email, password),
+    posts: async (_, args, { database }) => await database.getPosts(),
+    post: async (_, { id }, { database }) => await database.getPost(id),
   },
+
   Post: {
-    author: () => ({
-      id: "2",
-      username: "Thang",
-      email: "thang@gmail.com",
-    }),
+    author: async (parent, args, { database }) =>
+      await database.getUser(parent.authorId),
   },
   User: {
-    posts: () => [
-      {
-        id: "12",
-        title: "This is post 3",
-        body: "This is body of post 3",
-      },
-    ],
+    posts: async (parent, args, { database }) => {
+      return await database.getPostByAuthor(parent._id);
+    },
+  },
+
+  // Create
+  Mutation: {
+    signup: async (_, { username, email, password }, { database }) =>
+      await database.signup(username, email, password),
+    createPost: async (parent, { title, content, authorId }, { database }) =>
+      await database.createPost(title, content, authorId),
   },
 };
 

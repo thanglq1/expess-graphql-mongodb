@@ -18,8 +18,14 @@ const graphqlSchema = `#graphql
     type Query {
         users: [User]
         user(id: ID!): User
+        signin(email: String!, password: String!): User
         posts: [Post]
         post(id: ID!): Post
+    }
+
+    type Mutation {
+        signup(username: String!, email: String!, password: String!): User
+        createPost(title: String!, content: String!, authorId: String!): Post
     }
 `;
 
